@@ -19,6 +19,7 @@ function TicTacToe() {
   );
   const [currentPlayer, setCurrentPlayer] = useState("X");
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
+  const [allButtons, setAllButtons] = useState([]);
 
   const handleCurrentPlayer = (event) => {
     if (event.target.textContent == "") {
@@ -27,6 +28,11 @@ function TicTacToe() {
         let newBoard = [...prevBoard];
         newBoard[event.target.id] = currentPlayer;
         return newBoard;
+      });
+      setAllButtons((prevButtons) => {
+        let newButtons = [...prevButtons];
+        newButtons.push(event.target);
+        return newButtons;
       });
       if (currentPlayer == "X") {
         setCurrentPlayer("O");
@@ -43,34 +49,92 @@ function TicTacToe() {
         event.target.className = `w-full h-full rounded-2xl text-5xl font-bold text-pink-thick ${bg[1]}`;
         setResetButtonUI(`${bg[0]} ${buttonUI}`);
       }
-      checkComplete(event.target.id, ...board);
+      checkComplete(event.target.id);
     }
   };
 
-  const checkComplete = (id, myBoard) => {
-    console.log(myBoard, id);
-    // myBoard[id] = currentPlayer;
-    // if (
-    //   currentPlayer == myBoard[0] &&
-    //   currentPlayer == myBoard[1] &&
-    //   currentPlayer == myBoard[2]
-    // ) {
-    //   console.log(currentPlayer, "wins");
-    // }
+  const checkComplete = (id) => {
+    let currentBoard = [...board];
+    let won = false;
+    currentBoard[+id] = currentPlayer;
+    if (
+      currentBoard[0] === currentBoard[1] &&
+      currentBoard[0] === currentBoard[2] &&
+      currentBoard[0] !== ""
+    ) {
+      won = true;
+    } else if (
+      currentBoard[3] === currentBoard[4] &&
+      currentBoard[3] === currentBoard[5] &&
+      currentBoard[3] !== ""
+    ) {
+      won = true;
+    } else if (
+      currentBoard[6] === currentBoard[7] &&
+      currentBoard[6] === currentBoard[8] &&
+      currentBoard[6] !== ""
+    ) {
+      won = true;
+    } else if (
+      currentBoard[0] === currentBoard[3] &&
+      currentBoard[0] === currentBoard[6] &&
+      currentBoard[0] !== ""
+    ) {
+      won = true;
+    } else if (
+      currentBoard[1] === currentBoard[4] &&
+      currentBoard[1] === currentBoard[7] &&
+      currentBoard[1] !== ""
+    ) {
+      won = true;
+    } else if (
+      currentBoard[2] === currentBoard[5] &&
+      currentBoard[2] === currentBoard[8] &&
+      currentBoard[2] !== ""
+    ) {
+      won = true;
+    } else if (
+      currentBoard[0] === currentBoard[4] &&
+      currentBoard[0] === currentBoard[8] &&
+      currentBoard[0] !== ""
+    ) {
+      won = true;
+    } else if (
+      currentBoard[2] === currentBoard[4] &&
+      currentBoard[2] === currentBoard[6] &&
+      currentBoard[2] !== ""
+    ) {
+      won = true;
+    }
+    if (won) {
+      console.log(currentPlayer, "wins");
+    }
   };
 
-  const handleReset = (event) => {
-    console.log(e);
+  const handleReset = () => {
+    setCurrentPlayer("X");
+    setCurrentPlayerBG(bg[0]);
+    setCurrentPlayerUI(`${bg[0]} ${commonPlayerUI}`);
+    setCurrentPlayerColor("text-green-thick");
+    setResetButtonUI(`${bg[0]} ${buttonUI}`);
+    setBoard(["", "", "", "", "", "", "", "", ""]);
+    allButtons.map((button) => {
+      button.textContent = "";
+      button.className = "w-full h-full";
+    });
   };
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <div className="py-20 grid grid-cols-3 w-full gap-4">
+      <h2 className="py-8 text-white text-4xl font-quicksand-bold">
+        Tic Tac Toe
+      </h2>
+      <div className="pb-20 grid grid-cols-3 w-full gap-4">
         <p className="text-white text-4xl px-4 bg-green-dark w-full text-end rounded-r-2xl">
           X
         </p>
-        <div className="flex justify-center items-center text-xl">
-          <p className={`${currentPlayerColor} text-lg`}>
+        <div className="flex justify-center items-center text-2xl">
+          <p className={`${currentPlayerColor}`}>
             Player {currentPlayer == "X" ? 1 : 2}
           </p>
         </div>

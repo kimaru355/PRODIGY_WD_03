@@ -2,6 +2,12 @@
 export default {
   content: ["index.html", "./src/**/*.{js,jsx}"],
   theme: {
+    fontFamily: {
+      "quicksand-bold": "QuickSand Bold",
+      quicksand: "QuickSand",
+      poppins: "Poppins",
+      "poppins-bold": "Poppins",
+    },
     extend: {
       colors: {
         "blue-dark": "#0f0428",
