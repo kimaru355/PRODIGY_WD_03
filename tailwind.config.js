@@ -20,6 +20,7 @@ export default {
         "pink-light": "#4b306c",
         "pink-dark": "#6a4c85",
         "pink-thick": "#dc9ede",
+        "slate-1": "rgba(100, 116, 139, 0.4)",
       },
     },
   },
