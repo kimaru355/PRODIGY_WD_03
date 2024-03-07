@@ -23,6 +23,12 @@ function TicTacToe() {
   const [allButtons, setAllButtons] = useState([]);
   const [players, setPlayers] = useState({ one: 0, tie: 0, two: 0 });
   const [choosePlayer, setChoosePlayer] = useState(false);
+  const [complete, setComplete] = useState({
+    status: false,
+    start: null,
+    stop: null,
+  });
+  const markWinnerRef = useRef();
   const zeroRef = useRef();
   const oneRef = useRef();
   const twoRef = useRef();
@@ -74,6 +80,8 @@ function TicTacToe() {
   const checkComplete = (id, last = null) => {
     let currentBoard = [...board];
     let won = false;
+    let startP = null;
+    let stopP = null;
     currentBoard[+id] = currentPlayer;
     last !== null ? (currentBoard[+last] = "O") : null;
     if (
@@ -82,48 +90,64 @@ function TicTacToe() {
       currentBoard[0] !== ""
     ) {
       won = true;
+      startP = 0;
+      stopP = 2;
     } else if (
       currentBoard[3] === currentBoard[4] &&
       currentBoard[3] === currentBoard[5] &&
       currentBoard[3] !== ""
     ) {
       won = true;
+      startP = 3;
+      stopP = 5;
     } else if (
       currentBoard[6] === currentBoard[7] &&
       currentBoard[6] === currentBoard[8] &&
       currentBoard[6] !== ""
     ) {
       won = true;
+      startP = 6;
+      stopP = 8;
     } else if (
       currentBoard[0] === currentBoard[3] &&
       currentBoard[0] === currentBoard[6] &&
       currentBoard[0] !== ""
     ) {
       won = true;
+      startP = 0;
+      stopP = 6;
     } else if (
       currentBoard[1] === currentBoard[4] &&
       currentBoard[1] === currentBoard[7] &&
       currentBoard[1] !== ""
     ) {
       won = true;
+      startP = 1;
+      stopP = 7;
     } else if (
       currentBoard[2] === currentBoard[5] &&
       currentBoard[2] === currentBoard[8] &&
       currentBoard[2] !== ""
     ) {
       won = true;
+      startP = 2;
+      stopP = 8;
     } else if (
       currentBoard[0] === currentBoard[4] &&
       currentBoard[0] === currentBoard[8] &&
       currentBoard[0] !== ""
     ) {
       won = true;
+      startP = 0;
+      stopP = 8;
     } else if (
       currentBoard[2] === currentBoard[4] &&
       currentBoard[2] === currentBoard[6] &&
       currentBoard[2] !== ""
     ) {
       won = true;
+      startP = 2;
+      stopP = 6;
     }
     if (won) {
       setPlayers((prevPlayers) => {
@@ -135,7 +159,12 @@ function TicTacToe() {
           : (newPlayers.two += 1);
         return newPlayers;
       });
-      handleReset(currentBoard, id, last !== null ? null : null);
+      setComplete({
+        status: true,
+        start: startP,
+        stop: stopP,
+      });
+      handleWinner(startP, stopP);
     }
     let tie = true;
     for (let i = 0; i < 9; i++) {
@@ -147,17 +176,21 @@ function TicTacToe() {
         newPlayers.tie += 1;
         return newPlayers;
       });
-      console.log("tie");
-      handleReset(currentBoard, id, last !== null ? null : null);
+      setComplete({
+        status: true,
+        start: null,
+        stop: null,
+      });
     }
-    console.log(id, tie, currentBoard);
     return tie || won;
   };
 
-  const handleReset = (event, playerId = null, botId = null) => {
+  const handleReset = () => {
     let newButtons = [...allButtons];
-    playerId !== null ? newButtons.push(sortButtons(playerId)) : null;
-    botId !== null ? newButtons.push(sortButtons(botId)) : null;
+    setComplete((complete) => ({
+      ...complete,
+      status: false,
+    }));
     if (newButtons.length > 0) {
       setCurrentPlayer("X");
       setCurrentPlayerBG(bg[0]);
@@ -174,7 +207,7 @@ function TicTacToe() {
       if (players.one !== 0 || players.tie !== 0 || players.two !== 0) {
         setPlayers({ one: 0, tie: 0, two: 0 });
       } else {
-        setChoosePlayer(!choosePlayer);
+        setChoosePlayer(true);
       }
     }
   };
@@ -207,15 +240,19 @@ function TicTacToe() {
   const botPlay = (id) => {
     let available = allButtons.map((button) => +button.id);
     available.push(+id);
-    let botChoice;
+    let bot;
     while (true) {
-      botChoice = Math.floor(Math.random() * 8);
-      if (!available.includes(botChoice)) {
+      bot = Math.floor(Math.random() * 8);
+      if (!available.includes(bot)) {
         break;
       }
     }
-    botChoice = sortButtons(botChoice);
-
+    setBoard((prevBoard) => {
+      let newBoard = [...prevBoard];
+      newBoard[bot] = "O";
+      return newBoard;
+    });
+    let botChoice = sortButtons(bot);
     botChoice.textContent = "O";
     botChoice.className = `w-full h-full rounded-2xl text-5xl font-bold text-pink-thick ${bg[1]}`;
     setAllButtons((prevButtons) => {
@@ -233,6 +270,19 @@ function TicTacToe() {
       setCurrentPlayers([1, 0]);
     }
     setChoosePlayer(false);
+  };
+
+  const handleWinner = (start, stop) => {
+    let degrees =
+      stop - start == 2
+        ? 0
+        : stop - start == 6
+        ? 90
+        : stop - start == 4
+        ? 135
+        : 45;
+    console.log(start, stop);
+    console.log(degrees);
   };
 
   return (
@@ -255,7 +305,27 @@ function TicTacToe() {
           O
         </p>
       </div>
-      <div className="grid grid-cols-3 grid-rows-3 gap-4">
+      {complete.status && (
+        <div
+          className="w-full h-screen absolute top-0"
+          onClick={handleReset}
+        ></div>
+      )}
+      <div className="grid grid-cols-3 grid-rows-3 gap-4 relative">
+        {complete.status && (
+          <div
+            className="w-full h-full flex justify-center items-center absolute overflow-hidden rounded-xl"
+            onClick={handleReset}
+          >
+            {complete.start && (
+              <div
+                ref={markWinnerRef}
+                className="w-[1000px] absolute h-8 bg-gradient-to-b from-green-2 from-10% via-green-1 via-50% to-green-2 to-90%"
+                onClick={handleReset}
+              ></div>
+            )}
+          </div>
+        )}
         <div className={currentPlayerUI}>
           <button
             type="button"
@@ -338,7 +408,7 @@ function TicTacToe() {
           ></button>
         </div>
       </div>
-      <div className="grid grid-cols-3 grid-rows-2 place-items-center text-2xl py-8 font-bold">
+      <div className="grid grid-cols-3 grid-rows-2 place-items-center text-2xl py-8 font-bold text-gray-400">
         <p>{currentPlayers[1] === 2 ? "Player 1" : "Player"}</p>
         <p>Tie</p>
         <p>{currentPlayers[1] === 2 ? "Player 2" : "Bot"}</p>
