@@ -22,13 +22,13 @@ function TicTacToe() {
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
   const [allButtons, setAllButtons] = useState([]);
   const [players, setPlayers] = useState({ one: 0, tie: 0, two: 0 });
-  const [choosePlayer, setChoosePlayer] = useState(false);
+  const [choosePlayer, setChoosePlayer] = useState(true);
   const [complete, setComplete] = useState({
     status: false,
     start: null,
     stop: null,
+    degrees: 0,
   });
-  const markWinnerRef = useRef();
   const zeroRef = useRef();
   const oneRef = useRef();
   const twoRef = useRef();
@@ -159,12 +159,21 @@ function TicTacToe() {
           : (newPlayers.two += 1);
         return newPlayers;
       });
+      let degrees =
+        stopP - startP == 2
+          ? 0
+          : stopP - startP == 6
+          ? 90
+          : stopP - startP == 4
+          ? 135
+          : 45;
       setComplete({
         status: true,
         start: startP,
         stop: stopP,
+        degrees: degrees,
       });
-      handleWinner(startP, stopP);
+      return;
     }
     let tie = true;
     for (let i = 0; i < 9; i++) {
@@ -180,6 +189,7 @@ function TicTacToe() {
         status: true,
         start: null,
         stop: null,
+        degrees: 0,
       });
     }
     return tie || won;
@@ -187,10 +197,12 @@ function TicTacToe() {
 
   const handleReset = () => {
     let newButtons = [...allButtons];
-    setComplete((complete) => ({
-      ...complete,
+    setComplete({
       status: false,
-    }));
+      start: null,
+      stop: null,
+      degrees: 0,
+    });
     if (newButtons.length > 0) {
       setCurrentPlayer("X");
       setCurrentPlayerBG(bg[0]);
@@ -272,19 +284,6 @@ function TicTacToe() {
     setChoosePlayer(false);
   };
 
-  const handleWinner = (start, stop) => {
-    let degrees =
-      stop - start == 2
-        ? 0
-        : stop - start == 6
-        ? 90
-        : stop - start == 4
-        ? 135
-        : 45;
-    console.log(start, stop);
-    console.log(degrees);
-  };
-
   return (
     <div className="flex flex-col justify-center items-center">
       <h2 className="py-8 text-white text-4xl font-quicksand-bold">
@@ -317,10 +316,9 @@ function TicTacToe() {
             className="w-full h-full flex justify-center items-center absolute overflow-hidden rounded-xl"
             onClick={handleReset}
           >
-            {complete.start && (
+            {complete.start >= 0 && (
               <div
-                ref={markWinnerRef}
-                className="w-[1000px] absolute h-8 bg-gradient-to-b from-green-2 from-10% via-green-1 via-50% to-green-2 to-90%"
+                className={`w-[1000px] absolute h-8 bg-gradient-to-b from-green-2 from-10% via-green-1 via-50% to-green-2 to-90% rotate-[${complete.degrees}deg]`}
                 onClick={handleReset}
               ></div>
             )}
