@@ -2,8 +2,10 @@ import { useState, useRef } from "react";
 import { FaRedo } from "react-icons/fa";
 
 function TicTacToe() {
-  const commonPlayerUI = "w-20 h-20 rounded-2xl text-2xl";
-  const buttonUI = "flex justify-center items-center h-14 w-14 rounded-full";
+  const commonPlayerUI =
+    "w-20 h-20 rounded-2xl text-2xl sm:w-[6rem] sm:h-[6rem] lg:w-[8rem] lg:h-[8rem]";
+  const buttonUI =
+    "flex justify-center items-center h-14 w-14 rounded-full sm:h-[5rem] sm:w-[5rem] lg:w-[6rem] lg:h-[6rem]";
   const bg = [
     "bg-gradient-to-t from-green-dark to-green-light",
     "bg-gradient-to-t from-pink-dark to-pink-light",
@@ -22,7 +24,7 @@ function TicTacToe() {
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
   const [allButtons, setAllButtons] = useState([]);
   const [players, setPlayers] = useState({ one: 0, tie: 0, two: 0 });
-  const [choosePlayer, setChoosePlayer] = useState(true);
+  const [choosePlayer, setChoosePlayer] = useState(false);
   const [complete, setComplete] = useState({
     status: false,
     start: null,
@@ -57,17 +59,17 @@ function TicTacToe() {
         setCurrentPlayerUI(`${commonPlayerUI} ${bg[1]}`);
         setCurrentPlayerBG(bg[1]);
         setCurrentPlayerColor("text-pink-thick");
-        event.target.className = `w-full h-full rounded-2xl text-5xl font-bold text-green-thick ${bg[0]}`;
+        event.target.className = `w-full h-full rounded-2xl text-5xl font-bold sm:text-7xl text-green-thick ${bg[0]}`;
         setResetButtonUI(`${bg[1]} ${buttonUI}`);
       } else if (currentPlayer == "O" && currentPlayers[1] !== 0) {
         setCurrentPlayer("X");
         setCurrentPlayerUI(`${commonPlayerUI} ${bg[0]}`);
         setCurrentPlayerBG(bg[0]);
         setCurrentPlayerColor("text-green-thick");
-        event.target.className = `w-full h-full rounded-2xl text-5xl font-bold text-pink-thick ${bg[1]}`;
+        event.target.className = `w-full h-full rounded-2xl text-5xl font-bold sm:text-7xl text-pink-thick ${bg[1]}`;
         setResetButtonUI(`${bg[0]} ${buttonUI}`);
       } else if (currentPlayers[1] == 0) {
-        event.target.className = `w-full h-full rounded-2xl text-5xl font-bold text-green-thick ${bg[0]}`;
+        event.target.className = `w-full h-full rounded-2xl text-5xl font-bold sm:text-7xl text-green-thick ${bg[0]}`;
       }
       let won = checkComplete(event.target.id);
       if (!won && currentPlayers[1] === 0 && allButtons.length < 8) {
@@ -270,7 +272,7 @@ function TicTacToe() {
     setCurrentPlayer("X");
     let botChoice = sortButtons(bot);
     botChoice.textContent = "O";
-    botChoice.className = `w-full h-full rounded-2xl text-5xl font-bold text-pink-thick ${bg[1]}`;
+    botChoice.className = `w-full h-full rounded-2xl text-5xl font-bold sm:text-7xl text-pink-thick ${bg[1]}`;
     setAllButtons((prevButtons) => {
       let newButtons = [...prevButtons];
       newButtons.push(botChoice);
@@ -290,21 +292,21 @@ function TicTacToe() {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <h2 className="py-8 text-white text-4xl font-quicksand-bold">
+      <h2 className="py-6 text-white text-4xl font-quicksand-bold sm:text-5xl">
         Tic Tac Toe
       </h2>
-      <div className="pb-16 grid grid-cols-3 w-full gap-4">
-        <p className="text-white text-4xl px-4 bg-green-dark w-full text-end rounded-r-2xl">
+      <div className="pb-16 grid grid-cols-3 w-full gap-4 sm:gap-6">
+        <p className="text-white text-4xl px-4 bg-green-dark w-full text-end rounded-r-2xl sm:text-6xl sm:rounded-r-[2rem] sm:px-6">
           X
         </p>
-        <div className="flex justify-center items-center text-2xl">
+        <div className="flex justify-center items-center text-2xl sm:text-4xl">
           <p className={`${currentPlayerColor}`}>
             {currentPlayers[1] === 2
               ? `Player ${currentPlayer == "X" ? 1 : 2}`
               : "Player"}
           </p>
         </div>
-        <p className="text-white text-4xl bg-pink-dark w-full text-start px-4 rounded-l-2xl">
+        <p className="text-white text-4xl bg-pink-dark w-full text-start px-4 rounded-l-2xl sm:text-6xl sm:rounded-l-[2rem] sm:px-6">
           O
         </p>
       </div>
@@ -314,7 +316,7 @@ function TicTacToe() {
           onClick={handleReset}
         ></div>
       )}
-      <div className="grid grid-cols-3 grid-rows-3 gap-4 relative">
+      <div className="grid grid-cols-3 grid-rows-3 gap-4 relative sm:gap-6">
         {complete.status && (
           <div
             className="w-full h-full flex justify-center items-center absolute overflow-hidden rounded-xl"
@@ -436,7 +438,7 @@ function TicTacToe() {
           ></button>
         </div>
       </div>
-      <div className="grid grid-cols-3 grid-rows-2 place-items-center text-2xl py-8 font-bold text-gray-400">
+      <div className="grid grid-cols-3 grid-rows-2 place-items-center text-2xl py-8 font-bold text-gray-400 sm:text-3xl lg:text-4xl sm:py-10">
         <p>{currentPlayers[1] === 2 ? "Player 1" : "Player"}</p>
         <p>Tie</p>
         <p>{currentPlayers[1] === 2 ? "Player 2" : "Bot"}</p>
@@ -445,22 +447,25 @@ function TicTacToe() {
         <p>{players.two}</p>
       </div>
       <button className={resetButtonUI} onClick={handleReset}>
-        <FaRedo className="w-8 h-8" fill="#9f9f9f" />
+        <FaRedo
+          className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14"
+          fill="#9f9f9f"
+        />
       </button>
       {choosePlayer && (
         <div className="w-full h-screen flex justify-center items-center absolute top-0 bg-slate-1">
-          <div className="w-72 h-72 bg-blue-light absolute flex flex-col items-center gap-8 p-4 rounded-xl">
-            <h3 className="text-2xl">Choose your opponent:</h3>
+          <div className="w-72 h-72 bg-blue-light absolute flex flex-col items-center justify-center gap-8 p-4 rounded-xl sm:w-[40rem] sm:h-[40rem] sm:gap-12 sm:p-8 sm:rounded-3xl">
+            <h3 className="text-2xl sm:text-5xl">Choose your opponent:</h3>
             <button
               type="button"
-              className="text-2xl rounded-xl w-40 py-4 bg-pink-thick"
+              className="text-2xl rounded-xl w-40 py-4 bg-pink-thick sm:w-72 sm:py-6 sm:text-4xl"
               onClick={() => handleOpponent("human")}
             >
               Two Players
             </button>
             <button
               type="button"
-              className="text-2xl rounded-xl w-40 py-4 bg-green-thick"
+              className="text-2xl rounded-xl w-40 py-4 sm:text-4xl bg-green-thick sm:w-72 sm:py-6"
               onClick={() => handleOpponent("bot")}
             >
               Bot
