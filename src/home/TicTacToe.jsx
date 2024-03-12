@@ -72,7 +72,10 @@ function TicTacToe() {
       let won = checkComplete(event.target.id);
       if (!won && currentPlayers[1] === 0 && allButtons.length < 8) {
         let last = botPlay(event.target.id);
-        checkComplete(event.target.id, last);
+        won = checkComplete(event.target.id, last);
+        if (won) {
+          setCurrentPlayer("O");
+        }
       }
     }
   };
@@ -173,7 +176,7 @@ function TicTacToe() {
         stop: stopP,
         degrees: degrees,
       });
-      return;
+      return won;
     }
     let tie = true;
     for (let i = 0; i < 9; i++) {
@@ -264,6 +267,7 @@ function TicTacToe() {
       newBoard[bot] = "O";
       return newBoard;
     });
+    setCurrentPlayer("X");
     let botChoice = sortButtons(bot);
     botChoice.textContent = "O";
     botChoice.className = `w-full h-full rounded-2xl text-5xl font-bold text-pink-thick ${bg[1]}`;
@@ -318,7 +322,33 @@ function TicTacToe() {
           >
             {complete.start >= 0 && (
               <div
-                className={`w-[1000px] absolute h-8 bg-gradient-to-b from-green-2 from-10% via-green-1 via-50% to-green-2 to-90% rotate-[${complete.degrees}deg]`}
+                className={`w-[1000px] absolute h-8 ${
+                  currentPlayer == "O" && currentPlayers[1] == 2
+                    ? "bg-gradient-to-b from-green-2 from-10% via-green-1 via-50% to-green-2 to-90%"
+                    : currentPlayer == "X" && currentPlayers[1] == 2
+                    ? "bg-gradient-to-b from-pink-2 from-10% via-pink-1 via-50% to-pink-2 to-90%"
+                    : currentPlayer == "X" && currentPlayers[1] == 0
+                    ? "bg-gradient-to-b from-green-2 from-10% via-green-1 via-50% to-green-2 to-90%"
+                    : "bg-gradient-to-b from-pink-2 from-10% via-pink-1 via-50% to-pink-2 to-90%"
+                } ${
+                  complete.degrees == 45
+                    ? "rotate-45"
+                    : complete.degrees == 135
+                    ? "rotate-[-45deg]"
+                    : complete.degrees == 90
+                    ? "rotate-90"
+                    : ""
+                } ${
+                  complete.start == 0 && complete.stop == 2
+                    ? "top-6"
+                    : complete.start == 6 && complete.stop == 8
+                    ? "bottom-6"
+                    : complete.start == 0 && complete.stop == 6
+                    ? "mr-[12rem]"
+                    : complete.start == 2 && complete.stop == 8
+                    ? "ml-[12rem]"
+                    : ""
+                }`}
                 onClick={handleReset}
               ></div>
             )}
@@ -426,7 +456,7 @@ function TicTacToe() {
               className="text-2xl rounded-xl w-40 py-4 bg-pink-thick"
               onClick={() => handleOpponent("human")}
             >
-              Human
+              Two Players
             </button>
             <button
               type="button"
