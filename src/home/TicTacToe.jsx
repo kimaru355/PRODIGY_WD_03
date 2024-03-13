@@ -24,7 +24,7 @@ function TicTacToe() {
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
   const [allButtons, setAllButtons] = useState([]);
   const [players, setPlayers] = useState({ one: 0, tie: 0, two: 0 });
-  const [choosePlayer, setChoosePlayer] = useState(false);
+  const [choosePlayer, setChoosePlayer] = useState(true);
   const [complete, setComplete] = useState({
     status: false,
     start: null,
